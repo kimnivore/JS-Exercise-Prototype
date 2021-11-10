@@ -7,7 +7,7 @@
         + If a plane lands, its `isFlying` property is set to false.
 */
 
-const { booleanTypeAnnotation } = require("@babel/types");
+const { booleanTypeAnnotation, yieldExpression } = require("@babel/types");
 
 // EXAMPLE SOLUTION CODE:
 function Airplane(name) {
@@ -37,6 +37,7 @@ Airplane.prototype.land = function () {
         + The `eat` method should have no effect if there are 10 items in the `stomach`.
     - Give instances of Person the ability to `.poop()`:
         + When an instance poops, its `stomach` should empty.
+
     - Give instances of Person a method `.toString()`:
         + It should return a string with `name` and `age`. Example: "Mary, 50"
 */
@@ -46,28 +47,23 @@ function Person(name, age) {
   this.age = age;
   this.stomach = [];
 }
-
 Person.prototype.eat = function(edible){
   if(this.stomach.length < 10){
     this.stomach.push(edible);
   }
 }
-
 Person.prototype.poop = function(){
   this.stomach = [];
 }
-
 Person.prototype.toString = function(){
   return `${this.name}, ${this.age}`;
 }
 
 const kyler = new Person('Kyler', 25);
 const ben = new Person('Ben', 28);
-
-console.log('Task 1')
-console.log(kyler.toString());
-console.log(ben.toString());
-
+console.log('Task 1', kyler.toString(), ben.toString());
+// console.log(kyler.toString());
+// console.log(ben.toString());
 ben.eat('pizza');
 ben.eat('tacos');
 ben.eat('sushi');
@@ -93,11 +89,27 @@ console.log(ben.stomach);
         + The `drive` method should return a string "I ran out of fuel at x miles!" x being `odometer`.
 */
 
-function Car() {
-  
+function Car(model, milesPerGallon) {
+  this.model = model;
+  this.milesPerGallon = milesPerGallon;
+  this.tank = 0;
+  this.odometer = 0;
+}
+Car.prototype.fill = function(gallons) {
+  this.tank += gallons;
+}
+Car.prototype.drive = function(distance) {
+  this.odometer += distance;
+  this.tank -= (this.milesPerGallon/distance);
+  if(this.tank === 0){
+    return `I ran out of fuel at ${this.odometer} miles!`;
+  }
 }
 
-
+const bmw = new Car('X5', 1);
+bmw.fill(10);
+bmw.drive(10);
+console.log('Task 2', bmw.tank, bmw.odometer);
 /*
   TASK 3
     - Write a Baby constructor subclassing Person.
@@ -105,11 +117,20 @@ function Car() {
     - Besides the methods on Person.prototype, babies have the ability to `.play()`:
         + Should return a string "Playing with x", x being the favorite toy.
 */
-function Baby() {
- 
+
+
+function Baby(name, age, favoriteToy) {
+  Person.call(this, name, age);
+  this.favoriteToy = favoriteToy;
 }
 
+ Baby.prototype = Object.create(Person.prototype);
+ Baby.prototype.play = function(){
+   return `Playing with ${this.favoriteToy}`;
+ }
 
+ const kim = new Baby('kim', 42, 'computer');
+ console.log('Task 3', kim, kim.play());
 /* 
   TASK 4
   In your own words explain the four principles for the "this" keyword below:
